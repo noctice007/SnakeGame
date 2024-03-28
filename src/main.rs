@@ -1,7 +1,7 @@
 use rand::{thread_rng, Rng};
 use sfml::{
     graphics::{Color, RectangleShape, RenderTarget, RenderWindow, Shape, Transformable},
-    system::{self, Time, Vector2f},
+    system::{self, Time, Vector2f, Vector2u},
     window::{Event, Key, Style},
 };
 
@@ -102,6 +102,9 @@ impl<'a> Snake<'a> {
             self.tail.push(Self::build_seg(back_pos));
         }
     }
+    fn position(&self) -> Vector2f {
+        self.head.position()
+    }
 }
 fn main() {
     //initlize a window
@@ -163,6 +166,34 @@ fn main() {
             snake.current_speed *= SPEED_FACTOR;
         }
         snake.move_(dt);
+
+        //handle the crash with the boundaries
+        let Vector2u {
+            x: window_width,
+            y: window_height,
+        } = window.size();
+        let Vector2f {
+            x: snake_x,
+            y: snake_y,
+        } = snake.position();
+        if snake_x < 0.0
+            || snake_x > window_width as f32
+            || snake_y < 0.0
+            || snake_y > window_height as f32
+        {
+            println!("You crashed with the boundaries");
+            window.close();
+            break;
+        }
+
+        //handle the crashe with the snake itself
+        for seg in snake.tail.iter().skip(16).rev() {
+            if snake.intersect(seg) {
+                println!("You crashed with yourself");
+                window.close();
+                break;
+            }
+        }
         snake.current_speed = SPEED;
         if snake.intersect(&food) {
             food.set_position(get_food_pos());
