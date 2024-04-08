@@ -2,7 +2,7 @@ use rand::{thread_rng, Rng};
 use sfml::{
     graphics::{Color, RectangleShape, RenderTarget, RenderWindow, Shape, Transformable},
     system::{self, Time, Vector2f, Vector2u},
-    window::{Event, Key, Style},
+    window::{Key, Style},
 };
 
 const SPEED: f32 = 400f32;
